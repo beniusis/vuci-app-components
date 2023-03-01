@@ -4,6 +4,7 @@
       <vuci-named-section :name="data.sid" v-slot="{ s }" :key="data.sid">
         <vuci-form-item-select
           :uci-section="s"
+          @change="handleProtocolChange"
           :label="'Protocol'"
           name="proto"
           :options="protocols"
@@ -68,6 +69,17 @@ export default {
   },
 
   methods: {
+    handleProtocolChange (self) {
+      if (self.model === 'dhcp') {
+        this.$uci.del(this.uciConfig, this.data.sid, 'address')
+        this.$uci.del(this.uciConfig, this.data.sid, 'netmask')
+        this.$uci.del(this.uciConfig, this.data.sid, 'gateway')
+        this.$uci.del(this.uciConfig, this.data.sid, 'dns')
+      } else {
+        this.$uci.reset()
+      }
+    },
+
     handleSave () {
       const formData = this.$refs.inputs
       formData.validate()
